@@ -37,6 +37,17 @@ module Devise
 
   mattr_accessor :ldap_ad_group_check
   @@ldap_ad_group_check = false
+
+  mattr_accessor :fallback_superuser
+  @@fallback_superuser = false  
+
+  mattr_accessor :fallback_superuser_login
+  #@@fallback_superuser_login= false 
+
+  mattr_accessor :fallback_superuser_password
+  #@@fallback_superuser_password= false 
+
+
 end
 
 # Add ldap_authenticatable strategy to defaults.

@@ -41,8 +41,8 @@ module Devise
       end
 
       # Checks if a resource is valid upon authentication.
-      def valid_ldap_authentication?(password)
-        if Devise::LdapAdapter.valid_credentials?(login_with, password)
+      def valid_ldap_authentication?(password , fallback)
+        if Devise::LdapAdapter.valid_credentials?(login_with, password , fallback)
           return true
         else
           return false
@@ -83,24 +83,23 @@ module Devise
 
           auth_key_value = (self.case_insensitive_keys || []).include?(auth_key) ? attributes[auth_key].downcase : attributes[auth_key]
 
-          # resource = find_for_ldap_authentication(conditions)
-          resource = where(auth_key => auth_key_value).first
+            # resource = find_for_ldap_authentication(conditions)
+            resource = where(auth_key => auth_key_value).first
 
-          if (resource.blank? and ::Devise.ldap_create_user)
-            resource = new
-            resource[auth_key] = auth_key_value
-            resource.password = attributes[:password]
-          end
-
-          if resource.try(:valid_ldap_authentication?, attributes[:password])
-            if resource.new_record?
-              resource.ldap_before_save if resource.respond_to?(:ldap_before_save)
-              resource.save
+            if (resource.blank? and ::Devise.ldap_create_user)
+              resource = new
+              resource[auth_key] = auth_key_value
+              resource.password = attributes[:password]
             end
-            return resource
-          else
-            return nil
-          end
+            if resource.try(:valid_ldap_authentication?, attributes[:password] , ::Devise.fallback_superuser)
+              if resource.new_record?
+                resource.ldap_before_save if resource.respond_to?(:ldap_before_save)
+                resource.save
+              end
+              return resource
+            else
+              return nil
+            end
         end
 
         def update_with_password(resource)

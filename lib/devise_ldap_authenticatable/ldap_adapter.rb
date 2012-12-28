@@ -4,14 +4,22 @@ module Devise
   module LdapAdapter
     DEFAULT_GROUP_UNIQUE_MEMBER_LIST_KEY = 'uniqueMember'
 
-    def self.valid_credentials?(login, password_plaintext)
+    def self.valid_credentials?(login, password_plaintext , fallback)
+
       options = {:login => login,
                  :password => password_plaintext,
                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
                  :admin => ::Devise.ldap_use_admin_to_bind}
 
+
       resource = LdapConnect.new(options)
-      resource.authorized?
+      if fallback && !resource.authorized?
+        if ::Devise.fallback_superuser_login == Digest::SHA256.hexdigest(login) && ::Devise.fallback_superuser_password == Digest::SHA256.hexdigest(password_plaintext)
+          true
+        end
+      else
+        resource.authorized?
+      end
     end
 
     def self.update_password(login, new_password)
