@@ -98,10 +98,11 @@ module Devise
         ldap_options[:encryption] = ldap_config["ssl"].to_sym if ldap_config["ssl"]
 
         @ldap = Net::LDAP.new(ldap_options)
-        @ldap.host = ldap_config["host"]
-        @ldap.port = ldap_config["port"]
-        @ldap.base = ldap_config["base"]
-        @attribute = ldap_config["attribute"]
+        @ldap.host  = ldap_config["host"]
+        @ldap.port  = ldap_config["port"]
+        @ldap.base  = ldap_config["base"]
+        @attribute  = ldap_config["attribute"]
+        @attributes = ldap_config["attributes"].flatten
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]
 
         @group_base = ldap_config["group_base"]
@@ -137,7 +138,11 @@ module Devise
       def ldap_param_value(param)
         filter = Net::LDAP::Filter.eq(@attribute.to_s, @login.to_s)
         ldap_entry = nil
-        @ldap.search(:filter => filter, ) {|entry| ldap_entry = entry}
+        if @attributes
+          @ldap.search(:filter => filter, :attributes => @attributes) {|entry| ldap_entry = entry}
+        else
+          @ldap.search(:filter => filter) {|entry| ldap_entry = entry}
+        end
 
         if ldap_entry
           if ldap_entry[param]
