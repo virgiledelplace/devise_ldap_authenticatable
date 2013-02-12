@@ -92,7 +92,7 @@ module Devise
       attr_reader :ldap, :login
 
       def initialize(params = {})
-        ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)[Rails.env]
+        ldap_config = (YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result).has_key? "default") ? YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)["default"] : YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)[Rails.env]
         ldap_options = params
         ldap_config["ssl"] = :simple_tls if ldap_config["ssl"] === true
         ldap_options[:encryption] = ldap_config["ssl"].to_sym if ldap_config["ssl"]
@@ -137,7 +137,7 @@ module Devise
       def ldap_param_value(param)
         filter = Net::LDAP::Filter.eq(@attribute.to_s, @login.to_s)
         ldap_entry = nil
-        @ldap.search(:filter => filter) {|entry| ldap_entry = entry}
+        @ldap.search(:filter => filter, ) {|entry| ldap_entry = entry}
 
         if ldap_entry
           if ldap_entry[param]
