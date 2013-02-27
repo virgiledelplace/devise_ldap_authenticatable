@@ -264,7 +264,7 @@ module Devise
 
       def add_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP add dn: #{param[:dn]}")
-        @ldap.add(dn: param[:dn], param[:attributes])
+        @ldap.add(dn: param[:dn], attributes: param[:attributes])
       end
 
       private
