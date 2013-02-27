@@ -87,6 +87,10 @@ module Devise
       self.ldap_connect(login).search_for_login
     end
 
+    def self.add_entry(login , param)
+      self.ldap_connect(login).add_entry(param)
+    end
+
     class LdapConnect
 
       attr_reader :ldap, :login
@@ -256,6 +260,11 @@ module Devise
         ldap_entry = nil
         @ldap.search(:filter => filter) {|entry| ldap_entry = entry}
         ldap_entry
+      end
+
+      def add_entry param
+        DeviseLdapAuthenticatable::Logger.send("LDAP add dn: #{param[:dn]}")
+        @ldap.add(dn: param[:dn], param[:attributes])
       end
 
       private
