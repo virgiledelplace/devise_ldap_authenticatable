@@ -273,7 +273,7 @@ module Devise
 
       def delete_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
-        @ldap.delete(dn: param[:dn]
+        @ldap.delete(dn: param[:dn])
       end
 
       private
