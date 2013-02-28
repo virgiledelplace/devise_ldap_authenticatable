@@ -282,7 +282,7 @@ module Devise
       end
 
       def create_dn login
-         "cn=#{login},#{@ldap.customer_base}"
+         "cn=#{login}"
       end
 
       private
