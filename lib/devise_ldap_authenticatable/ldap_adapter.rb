@@ -61,7 +61,7 @@ module Devise
     end
 
     def self.create_entry_dn(login)
-      self.create_dn(login)
+      LdapConnect.new().create_dn(login)
     end
 
     def self.set_ldap_param(login, param, new_value, password = nil)
