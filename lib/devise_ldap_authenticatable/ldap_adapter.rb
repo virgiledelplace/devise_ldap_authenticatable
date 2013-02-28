@@ -113,7 +113,7 @@ module Devise
         @ldap.host  =                 ldap_config["host"]
         @ldap.port  =                 ldap_config["port"]
         @ldap.base  =                 ldap_config["base"]
-        @ldap.customer_base =         ldap_config["customer_base"]
+        @customer_base =              ldap_config["customer_base"]
         @attribute  =                 ldap_config["attribute"]
         @attributes =                 ldap_config["attributes"].flatten
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]
@@ -282,7 +282,7 @@ module Devise
       end
 
       def create_dn login
-         "cn=#{login}"
+         "cn=#{login},#{@customer_base}"
       end
 
       private
