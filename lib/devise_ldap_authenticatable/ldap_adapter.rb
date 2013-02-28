@@ -60,10 +60,6 @@ module Devise
       self.ldap_connect(login).dn
     end
 
-    def self.create_entry_dn(login)
-      LdapConnect.new().create_dn(login)
-    end
-
     def self.set_ldap_param(login, param, new_value, password = nil)
       options = { :login => login,
                   :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
@@ -273,12 +269,12 @@ module Devise
 
       def add_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP add dn: #{param[:dn]}")
-        @ldap.add(dn: param[:dn], attributes: param[:attributes])
+        @ldap.add(dn: "#{create_dn param[:dn]}", attributes: param[:attributes])
       end
 
       def delete_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
-        @ldap.delete(dn: param[:dn])
+        @ldap.delete(dn: "#{create_dn param[:dn]}")
       end
 
       def create_dn login
