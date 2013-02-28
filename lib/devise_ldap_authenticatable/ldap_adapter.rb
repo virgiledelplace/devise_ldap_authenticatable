@@ -60,7 +60,7 @@ module Devise
       self.ldap_connect(login).dn
     end
 
-    def self.create_dn(login)
+    def self.create_entry_dn(login)
       self.create_dn(login)
     end
 
