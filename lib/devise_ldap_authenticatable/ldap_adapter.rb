@@ -91,6 +91,10 @@ module Devise
       self.ldap_connect(login).add_entry(param)
     end
 
+    def self.delete_entry(login , param)
+      self.ldap_connect(login).delete_entry(param)
+    end
+
     class LdapConnect
 
       attr_reader :ldap, :login
@@ -265,6 +269,11 @@ module Devise
       def add_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP add dn: #{param[:dn]}")
         @ldap.add(dn: param[:dn], attributes: param[:attributes])
+      end
+
+      def delete_entry param
+        DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
+        @ldap.delete(dn: param[:dn]
       end
 
       private
