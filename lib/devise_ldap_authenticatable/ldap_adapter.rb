@@ -60,6 +60,10 @@ module Devise
       self.ldap_connect(login).dn
     end
 
+    def self.create_dn(login)
+      self.create_dn(login)
+    end
+
     def self.set_ldap_param(login, param, new_value, password = nil)
       options = { :login => login,
                   :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
@@ -106,11 +110,12 @@ module Devise
         ldap_options[:encryption] = ldap_config["ssl"].to_sym if ldap_config["ssl"]
 
         @ldap = Net::LDAP.new(ldap_options)
-        @ldap.host  = ldap_config["host"]
-        @ldap.port  = ldap_config["port"]
-        @ldap.base  = ldap_config["base"]
-        @attribute  = ldap_config["attribute"]
-        @attributes = ldap_config["attributes"].flatten
+        @ldap.host  =                 ldap_config["host"]
+        @ldap.port  =                 ldap_config["port"]
+        @ldap.base  =                 ldap_config["base"]
+        @ldap.customer_base =         ldap_config["customer_base"]
+        @attribute  =                 ldap_config["attribute"]
+        @attributes =                 ldap_config["attributes"].flatten
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]
 
         @group_base = ldap_config["group_base"]
@@ -274,6 +279,10 @@ module Devise
       def delete_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
         @ldap.delete(dn: param[:dn])
+      end
+
+      def create_dn login
+         "cn=#{login},#{@ldap.customer_base}"
       end
 
       private
