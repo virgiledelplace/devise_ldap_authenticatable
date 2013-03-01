@@ -66,7 +66,7 @@ module Devise
                   :password => password }
 
       resource = LdapConnect.new(options)
-      resource.set_param(param, new_value)
+      resource.set_param(param, new_value , login)
     end
 
     def self.delete_ldap_param(login, param, password = nil)
@@ -130,8 +130,8 @@ module Devise
         update_ldap [[:delete, param.to_sym, nil]]
       end
 
-      def set_param(param, new_value)
-        update_ldap( { param.to_sym => new_value } )
+      def set_param(param, new_value , login)
+        update_ldap( { param.to_sym => new_value }, login )
       end
 
       def dn
