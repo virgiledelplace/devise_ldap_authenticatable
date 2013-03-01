@@ -99,6 +99,22 @@ module Devise
       self.ldap_connect(login).delete_entry(param)
     end
 
+    def self.add_group_entry(login , param)
+      self.ldap_connect(login).add_group_entry(param)
+    end
+
+    def self.delete_group_entry(login , param)
+      self.ldap_connect(login).delete_group_entry(param)
+    end
+
+    #def self.add_member_to_group(login , param)
+    #  self.ldap_connect(login).add_member_to_group(param)
+    #end
+
+    #def self.delete_member_to_group(login , param)
+    #  self.ldap_connect(login).delete_member_to_group(param)
+    #end
+
     class LdapConnect
 
       attr_reader :ldap, :login
@@ -277,13 +293,27 @@ module Devise
         @ldap.add(dn: "#{create_dn param[:dn]}", attributes: param[:attributes])
       end
 
+      def add_group_entry param
+        DeviseLdapAuthenticatable::Logger.send("LDAP add group dn: #{param[:dn]}")
+        @ldap.add(dn: "#{create_group_dn param[:dn]}", attributes: param[:attributes])
+      end
+
       def delete_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
         @ldap.delete(dn: "#{create_dn param[:dn]}")
       end
 
+      def delete_entry param
+        DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
+        @ldap.delete(dn: "#{create_group_dn param[:dn]}")
+      end
+
       def create_dn login
          "cn=#{login},#{@people_base}"
+      end
+
+      def create_group_dn login
+         "cn=#{login},#{@groups_base}"
       end
 
       def group_exists? dn
