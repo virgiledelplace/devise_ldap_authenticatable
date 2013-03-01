@@ -304,8 +304,8 @@ module Devise
         @ldap.delete(dn: "#{create_dn param[:dn]}")
       end
 
-      def delete_entry param
-        DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
+      def delete_group_entry param
+        DeviseLdapAuthenticatable::Logger.send("LDAP delete group dn: #{param[:dn]}")
         @ldap.delete(dn: "#{create_group_dn param[:dn]}")
       end
 
