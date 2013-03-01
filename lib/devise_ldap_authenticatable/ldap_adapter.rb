@@ -62,7 +62,7 @@ module Devise
 
     def self.set_ldap_param(login, param, new_value, password = nil)
       options = { :login => login,
-                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
+                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_customer_builder,
                   :password => password }
 
       resource = LdapConnect.new(options)
@@ -71,7 +71,7 @@ module Devise
 
     def self.delete_ldap_param(login, param, password = nil)
       options = { :login => login,
-                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
+                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_customer_builder,
                   :password => password }
 
       resource = LdapConnect.new(options)
