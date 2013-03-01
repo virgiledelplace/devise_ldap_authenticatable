@@ -62,7 +62,7 @@ module Devise
 
     def self.set_ldap_param(login, param, new_value, password = nil)
       options = { :login => login,
-                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_customer_builder,
+                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
                   :password => password }
 
       resource = LdapConnect.new(options)
@@ -71,7 +71,7 @@ module Devise
 
     def self.delete_ldap_param(login, param, password = nil)
       options = { :login => login,
-                  :ldap_auth_username_builder => ::Devise.ldap_auth_username_customer_builder,
+                  :ldap_auth_username_builder => ::Devise.ldap_auth_usernamer_builder,
                   :password => password }
 
       resource = LdapConnect.new(options)
@@ -299,7 +299,7 @@ module Devise
         ldap.search(:base => dn, :scope => Net::LDAP::SearchScope_BaseObject).try(:first)
       end
 
-      def update_ldap(ops)
+      def update_ldap(ops, login = nil)
         operations = []
         if ops.is_a? Hash
           ops.each do |key,value|
@@ -316,8 +316,8 @@ module Devise
           privileged_ldap = self.ldap
         end
 
-        DeviseLdapAuthenticatable::Logger.send("Modifying user #{dn}")
-        privileged_ldap.modify(:dn => dn, :operations => operations)
+        DeviseLdapAuthenticatable::Logger.send("Modifying user #{create_dn(login)}")
+        privileged_ldap.modify(:dn => create_dn(login), :operations => operations)
       end
 
     end
