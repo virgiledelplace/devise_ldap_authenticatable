@@ -295,6 +295,7 @@ module Devise
 
       def add_group_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP add group dn: #{param[:dn]}")
+        (param[:attributes][:member] = create_dn param[:attributes][:member] ) if param[:attributes][:member].present?
         @ldap.add(dn: "#{create_group_dn param[:dn]}", attributes: param[:attributes])
       end
 
