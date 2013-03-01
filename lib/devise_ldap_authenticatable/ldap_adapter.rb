@@ -107,13 +107,13 @@ module Devise
       self.ldap_connect(login).delete_group_entry(param)
     end
 
-    #def self.add_member_to_group(login , param)
-    #  self.ldap_connect(login).add_member_to_group(param)
-    #end
+    def self.add_attribute_to_group(login , param)
+      self.ldap_connect(login).add_attribute_to_group(param)
+    end
 
-    #def self.delete_member_to_group(login , param)
-    #  self.ldap_connect(login).delete_member_to_group(param)
-    #end
+    def self.delete_attribute_to_group(login , param)
+      self.ldap_connect(login).delete_attribute_to_group(param)
+    end
 
     class LdapConnect
 
@@ -307,6 +307,16 @@ module Devise
       def delete_group_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP delete group dn: #{param[:dn]}")
         @ldap.delete(dn: "#{create_group_dn param[:dn]}")
+      end
+
+      def add_attribute_to_group param
+        DeviseLdapAuthenticatable::Logger.send("LDAP add attribute to group dn: #{param[:dn]}")
+        @ldap.add_attribute(dn: "#{create_group_dn param[:dn]}", "#{create_group_dn param[:attribute]}", "#{create_dn param[:value]}")
+      end
+
+      def delete_attribute_to_group param
+        DeviseLdapAuthenticatable::Logger.send("LDAP delete attribute to group dn: #{param[:dn]}")
+        @ldap.replace_attribute(dn: "#{create_group_dn param[:dn]}", "#{create_group_dn param[:attribute]}", param[:value] )
       end
 
       def create_dn login
