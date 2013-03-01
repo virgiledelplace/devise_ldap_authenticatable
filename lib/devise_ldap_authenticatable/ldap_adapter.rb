@@ -287,8 +287,7 @@ module Devise
       end
 
       def group_exists? dn
-        filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames")
-        search_dn = create_dn dn
+        filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("cn", dn)
         ldap_entry = nil
         @ldap.search(:filter => filter) {|entry| ldap_entry = entry}
         ldap_entry
