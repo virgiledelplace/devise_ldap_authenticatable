@@ -311,12 +311,12 @@ module Devise
 
       def add_attribute_to_group param
         DeviseLdapAuthenticatable::Logger.send("LDAP add attribute to group dn: #{param[:dn]}")
-        @ldap.add_attribute(dn: "#{create_group_dn param[:dn]}", "#{create_group_dn param[:attribute]}", "#{create_dn param[:value]}")
+        @ldap.add_attribute("#{create_group_dn param[:dn]}", "#{create_group_dn param[:attribute]}", "#{create_dn param[:value]}")
       end
 
       def delete_attribute_to_group param
         DeviseLdapAuthenticatable::Logger.send("LDAP delete attribute to group dn: #{param[:dn]}")
-        @ldap.replace_attribute(dn: "#{create_group_dn param[:dn]}", "#{create_group_dn param[:attribute]}", param[:value] )
+        @ldap.replace_attribute("#{create_group_dn param[:dn]}", "#{create_group_dn param[:attribute]}", param[:value] )
       end
 
       def create_dn login
