@@ -44,6 +44,10 @@ module Devise
       resource = LdapConnect.new(options)
     end
 
+    def self.group_exists?(login, dn)
+      self.ldap_connect(login).group_exists?(dn)
+    end
+
     def self.valid_login?(login)
       self.ldap_connect(login).valid_login?
     end
@@ -110,6 +114,7 @@ module Devise
         @ldap.port  =                 ldap_config["port"]
         @ldap.base  =                 ldap_config["base"]
         @people_base =                ldap_config["people_base"]
+        @groups_base =                ldap_config["groups_base"]  
         @attribute  =                 ldap_config["attribute"]
         @attributes =                 ldap_config["attributes"].flatten
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]
@@ -279,6 +284,14 @@ module Devise
 
       def create_dn login
          "cn=#{login},#{@people_base}"
+      end
+
+      def group_exists? dn
+        filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames")
+        search_dn = @ldap.create_dn dn
+        ldap_entry = nil
+        @ldap.search(:filter => filter) {|entry| ldap_entry = entry}
+        ldap_entry
       end
 
       private
