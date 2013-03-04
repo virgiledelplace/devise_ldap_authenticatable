@@ -111,9 +111,6 @@ module Devise
       self.ldap_connect(login).add_attribute_to_group(param)
     end
 
-    def self.delete_attribute_to_group(login , param)
-      self.ldap_connect(login).delete_attribute_to_group(param)
-    end
 
     class LdapConnect
 
@@ -300,8 +297,17 @@ module Devise
       end
 
       def delete_entry param
+        DeviseLdapAuthenticatable::Logger.send("LDAP search group of uid : #{param[:dn]}")
+        groups = ldap_param_value(username,'memberof')
+        dn = create_dn param[:dn]
+
+        groups.to_a.each do |group|
+          filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("dn", group)
+          members = @ldap.search(:filter => filter, :attributes => 'member')
+          @ldap.replace_attribute("#{create_group_dn param[:dn]}", "member", members.first[:member].delete(dn))
+        end
         DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
-        @ldap.delete(dn: "#{create_dn param[:dn]}")
+        @ldap.delete(dn: "#{dn}")
       end
 
       def delete_group_entry param
@@ -310,13 +316,8 @@ module Devise
       end
 
       def add_attribute_to_group param
-        DeviseLdapAuthenticatable::Logger.send("LDAP add attribute #{create_group_dn param[:attribute]} value #{param[:value]} to group dn: #{create_group_dn param[:dn]}")
+        DeviseLdapAuthenticatable::Logger.send("LDAP add attribute #{param[:attribute]} value #{create_dn param[:value]} to group dn: #{create_group_dn param[:dn]}")
         @ldap.add_attribute("#{create_group_dn param[:dn]}", "#{param[:attribute]}", "#{create_dn param[:value]}")
-      end
-
-      def delete_attribute_to_group param
-        DeviseLdapAuthenticatable::Logger.send("LDAP delete attribute to group dn: #{param[:dn]}")
-        @ldap.replace_attribute("#{create_group_dn param[:dn]}", "#{create_group_dn param[:attribute]}", param[:value] )
       end
 
       def create_dn login
