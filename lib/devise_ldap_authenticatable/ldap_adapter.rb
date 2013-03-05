@@ -298,13 +298,15 @@ module Devise
 
       def delete_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP search group of uid : #{param[:dn]}")
-        groups = ldap_param_value(param[:dn],'memberof')
+        groups = ldap_param_value('memberof')
         dn = create_dn param[:dn]
 
         groups.to_a.each do |group|
-          filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("dn", group)
-          members = @ldap.search(:filter => filter, :attributes => 'member')
+          DeviseLdapAuthenticatable::Logger.send("LDAP delete from group : #{group}")
+          filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("cn", group.split(',').first.split('=').last)
+          members = @ldap.search(:filter => filter, :attributes => 'member' , base: @ldap.people_base)
           @ldap.replace_attribute("#{create_group_dn param[:dn]}", "member", members.first[:member].delete(dn))
+          DeviseLdapAuthenticatable::Logger.send("LDAP member delete from group : #{group}")
         end
         DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
         @ldap.delete(dn: "#{dn}")
