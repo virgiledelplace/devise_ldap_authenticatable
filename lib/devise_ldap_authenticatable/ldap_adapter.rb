@@ -298,7 +298,7 @@ module Devise
 
       def delete_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP search group of uid : #{param[:dn]}")
-        groups = ldap_param_value(username,'memberof')
+        groups = ldap_param_value(param[:dn],'memberof')
         dn = create_dn param[:dn]
 
         groups.to_a.each do |group|
