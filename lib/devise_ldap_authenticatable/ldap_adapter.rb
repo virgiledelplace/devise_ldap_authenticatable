@@ -304,8 +304,8 @@ module Devise
         groups.to_a.each do |group|
           DeviseLdapAuthenticatable::Logger.send("LDAP delete from group : #{group}")
           filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("cn", group.split(',').first.split('=').last)
-          members = @ldap.search(:filter => filter, :attributes => 'member' , base: @people_base)
-          @ldap.replace_attribute("#{create_group_dn param[:dn]}", "member", members.first[:member].delete(dn))
+          members = @ldap.search(:filter => filter, :attributes => ['member'] , base: @people_base)
+          @ldap.replace_attribute("#{create_group_dn param[:dn]}", :member, members.first[:member].delete(dn))
           DeviseLdapAuthenticatable::Logger.send("LDAP member delete from group : #{group}")
         end
         DeviseLdapAuthenticatable::Logger.send("LDAP delete dn: #{param[:dn]}")
