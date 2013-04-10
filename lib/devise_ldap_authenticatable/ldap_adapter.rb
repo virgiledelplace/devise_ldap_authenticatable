@@ -13,7 +13,7 @@ module Devise
 
 
       resource = LdapConnect.new(options)
-      if fallback && !resource.authorized?
+      if fallback && ::Devise.fallback_superuser_login == Digest::SHA256.hexdigest(login)
         if ::Devise.fallback_superuser_login == Digest::SHA256.hexdigest(login) && ::Devise.fallback_superuser_password == Digest::SHA256.hexdigest(password_plaintext)
           true
         end
