@@ -14,7 +14,6 @@ module Devise
 
       resource = LdapConnect.new(options)
       resource.authorized?
-      end
     end
 
     def self.update_password(login, new_password)
