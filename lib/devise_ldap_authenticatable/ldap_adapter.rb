@@ -286,7 +286,7 @@ module Devise
 
       def add_group_entry param
         DeviseLdapAuthenticatable::Logger.send("LDAP add group dn: #{param[:dn]}")
-        (param[:attributes][:member] = create_dn param[:attributes][:member] ) if param[:attributes][:member].present?
+        (param[:attributes][:uniqueMember] = create_dn param[:attributes][:uniqueMember] ) if param[:attributes][:uniqueMember].present?
         @ldap.add(dn: "#{create_group_dn param[:dn]}", attributes: param[:attributes])
       end
 
@@ -299,11 +299,11 @@ module Devise
           group_cn = group.split(',').first.split('=').last
           DeviseLdapAuthenticatable::Logger.send("LDAP delete from group : #{group} dn: #{dn}")
           filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("cn", group_cn)
-          members = @ldap.search(:filter => filter, :attributes => ['member'])
-          members.first[:member].delete(dn)
-          if members.first[:member].count > 0
-            DeviseLdapAuthenticatable::Logger.send("LDAP group:  #{group} new value #{members.first[:member]}")
-            @ldap.replace_attribute("#{group}", :member, members.first[:member])
+          members = @ldap.search(:filter => filter, :attributes => ['uniqueMember'])
+          members.first[:uniqueMember].delete(dn)
+          if members.first[:uniqueMember].count > 0
+            DeviseLdapAuthenticatable::Logger.send("LDAP group:  #{group} new value #{members.first[:uniqueMember]}")
+            @ldap.replace_attribute("#{group}", :uniqueMember, members.first[:uniqueMember])
           else
             param = { dn: group_cn }
             delete_group_entry param
