@@ -298,7 +298,7 @@ module Devise
         groups.to_a.each do |group|
           group_cn = group.split(',').first.split('=').last
           DeviseLdapAuthenticatable::Logger.send("LDAP delete from group : #{group} dn: #{dn}")
-          filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("cn", group_cn)
+          filter = Net::LDAP::Filter.eq("objectClass", "groupOfUniqueNames") & Net::LDAP::Filter.eq("cn", group_cn)
           members = @ldap.search(:filter => filter, :attributes => ['uniqueMember'])
           members.first[:uniqueMember].delete(dn)
           if members.first[:uniqueMember].count > 0
@@ -333,7 +333,7 @@ module Devise
       end
 
       def group_exists? dn
-        filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") & Net::LDAP::Filter.eq("cn", dn)
+        filter = Net::LDAP::Filter.eq("objectClass", "groupOfUniqueNames") & Net::LDAP::Filter.eq("cn", dn)
         ldap_entry = nil
         @ldap.search(:filter => filter) {|entry| ldap_entry = entry}
         ldap_entry
