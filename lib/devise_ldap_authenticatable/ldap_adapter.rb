@@ -120,6 +120,7 @@ module Devise
         @ldap.host  =                 ldap_config["host"]
         @ldap.port  =                 ldap_config["port"]
         @ldap.base  =                 ldap_config["base"]
+        @ldap.encryption(method: :simple_tls, :tls_options => {:verify_mode => 0}) if ldap_config["ssl_verify_mode"] == false
         @people_base =                ldap_config["people_base"]
         @groups_base =                ldap_config["groups_base"]  
         @attribute  =                 ldap_config["attribute"]
