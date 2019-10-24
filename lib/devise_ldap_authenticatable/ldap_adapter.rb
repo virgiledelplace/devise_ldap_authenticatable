@@ -296,7 +296,7 @@ module Devise
         groups = ldap_param_value('memberof')
         dn = create_dn param[:dn]
 
-        groups.to_a.each do |group|
+        groups.each do |group|
           group_cn = group.split(',').first.split('=').last
           DeviseLdapAuthenticatable::Logger.send("LDAP delete from group : #{group} dn: #{dn}")
           filter = Net::LDAP::Filter.eq("objectClass", "groupOfUniqueNames") & Net::LDAP::Filter.eq("cn", group_cn)
