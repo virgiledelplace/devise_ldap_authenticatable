@@ -170,7 +170,7 @@ module Devise
           if ldap_entry[param]
             DeviseLdapAuthenticatable::Logger.send("Requested param #{param} has value #{ldap_entry.send(param)}")
             value = ldap_entry.send(param)
-            #value = value.first if value.is_a?(Array) and value.count == 1
+            value = value.first if value.is_a?(Array) and value.count == 1
             value
           else
             DeviseLdapAuthenticatable::Logger.send("Requested param #{param} does not exist")
@@ -296,7 +296,7 @@ module Devise
         groups = ldap_param_value('memberof')
         dn = create_dn param[:dn]
 
-        groups.each do |group|
+        groups.split.each do |group|
           group_cn = group.split(',').first.split('=').last
           DeviseLdapAuthenticatable::Logger.send("LDAP delete from group : #{group} dn: #{dn}")
           filter = Net::LDAP::Filter.eq("objectClass", "groupOfUniqueNames") & Net::LDAP::Filter.eq("cn", group_cn)
